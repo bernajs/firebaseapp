@@ -232,5 +232,5 @@ function recover() {
     var creds = {
         email: accountEmail
     };
-    database.resetPassword(creds);
+    firebase.auth().sendPasswordResetEmail(accountEmail);
 }
