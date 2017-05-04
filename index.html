@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8 col-md-4 col-lg-4">
+                <h4>Inicia sesión</h4>
+                <form action="javascript:void(0);">
+                    <label for="email">Correo</label>
+                    <input type="email" class="form-control" id="email">
+                    <label for="password">Contraseña</label>
+                    <input type="password" class="form-control" id="password">
+                    <div class="text-center">
+                        <button onclick="login()" class="btn btn-secondary margint-10">Inicia sesión</button>
+                        <button onclick="register()" class="btn btn-secondary margint-10">Registrate</button>
+                        <button onclick="recover()" class="btn btn-secondary margint-10">Recuperar contraseña</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row margint-10">
+            <div class="col-lg-4 col-md-4 col-lg-4 text-center">
+                <button onclick="loginFb()">Facebook login</button>
+                <button onclick="loginTw()">Twitter login</button>
+                <button onclick="loginGmail()">Gmail login</button>
+            </div>
+        </div>
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="js/credentials.js"></script>
+    <script src="js/app.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+</body>
+
+</html>
