@@ -7,6 +7,10 @@ var config = {
     storageBucket: "test-e339a.appspot.com",
     messagingSenderId: "408235569660"
 };
+
+var map;
+
+// AIzaSyAqu7AHxVVAn3HM-0p452n_YOLSXHc13HY
 firebase.initializeApp(config);
 
 var database = firebase.database();
@@ -30,12 +34,14 @@ function getCategories() {
         $('.usuarios').html('');
         snapshot.forEach(function (childSnapshot) {
             var childData = childSnapshot.val();
-            $('.categorias').append(` <div class="col-xs-6 col-md-3"><a href="categoria.html?id=` + childSnapshot.key + `" 
+            $('#categoria').append(` <div class="col-xs-6 col-md-3"><a href="categoria.html?id=` + childSnapshot.key + `" 
             class="thumbnail">
             <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMjc4IiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDI3OCAxODAiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjwhLS0KU291cmNlIFVSTDogaG9sZGVyLmpzLzEwMCV4MTgwCkNyZWF0ZWQgd2l0aCBIb2xkZXIuanMgMi42LjAuCkxlYXJuIG1vcmUgYXQgaHR0cDovL2hvbGRlcmpzLmNvbQooYykgMjAxMi0yMDE1IEl2YW4gTWFsb3BpbnNreSAtIGh0dHA6Ly9pbXNreS5jbwotLT48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwhW0NEQVRBWyNob2xkZXJfMTViZDU0ODAyMzMgdGV4dCB7IGZpbGw6I0FBQUFBQTtmb250LXdlaWdodDpib2xkO2ZvbnQtZmFtaWx5OkFyaWFsLCBIZWx2ZXRpY2EsIE9wZW4gU2Fucywgc2Fucy1zZXJpZiwgbW9ub3NwYWNlO2ZvbnQtc2l6ZToxNHB0IH0gXV0+PC9zdHlsZT48L2RlZnM+PGcgaWQ9ImhvbGRlcl8xNWJkNTQ4MDIzMyI+PHJlY3Qgd2lkdGg9IjI3OCIgaGVpZ2h0PSIxODAiIGZpbGw9IiNFRUVFRUUiLz48Zz48dGV4dCB4PSIxMDEuMzA0Njg3NSIgeT0iOTYuMyI+Mjc4eDE4MDwvdGV4dD48L2c+PC9nPjwvc3ZnPg==" alt="...">
             <strong">` + childData.name + `</strong>
             </a>
             </div>`);
+            $('.mapa_list').append('<li class="list-group-item">' + childData.name + '</li>');
+            addMarker(childData.coords);
         });
     });
 }
@@ -73,6 +79,19 @@ function eliminar(id) {
         .ref('users')
         .child(id)
         .remove();
+}
+
+function getCategoria(id) {
+    var id = getUrlVars()['id'];
+    var categoria;
+    database
+        .ref('categories/' + id)
+        .on('value', function (snapshot) {
+            categoria = (snapshot.val());
+            $('.nombre').html(categoria.name);
+            $('.descripcion').html(categoria.description);
+            $('.imagen').html(categoria.picture);
+        });
 }
 
 function agregar() {
@@ -208,6 +227,15 @@ function login() {
         });
 }
 
+firebase
+    .auth()
+    .onAuthStateChanged(function (user) {
+        if (user) {
+            console.log(user);
+        } else {
+            // No user is signed in.
+        }
+    });
 function register() {
     var email = $('#email').val();
     var password = $('#password').val();
@@ -232,5 +260,19 @@ function recover() {
     var creds = {
         email: accountEmail
     };
-    firebase.auth().sendPasswordResetEmail(accountEmail);
+    firebase
+        .auth()
+        .sendPasswordResetEmail(accountEmail);
+    alert('Verifica tu bandeja de entrada para que restaures tu contraseña');
+}
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window
+        .location
+        .href
+        .replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+            vars[key] = value;
+        });
+    return vars;
 }
