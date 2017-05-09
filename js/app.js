@@ -9,6 +9,7 @@ var config = {
 };
 
 var map;
+var uid;
 
 // AIzaSyAqu7AHxVVAn3HM-0p452n_YOLSXHc13HY
 firebase.initializeApp(config);
@@ -19,6 +20,17 @@ var database = firebase.database();
 // 'Hola',         date: Date(),         'transmitter':
 // localStorage.getItem('uid'),         'receiver': 1     });
 
+function authenticate() {
+    firebase
+        .auth()
+        .onAuthStateChanged(function (user) {
+            if (user) {
+                uid = user.uid;
+            } else {
+                // No user is signed in.
+            }
+        });
+}
 var leadsRef = database.ref('users');
 leadsRef.on('value', function (snapshot) {
     $('.usuarios').html('');
@@ -47,30 +59,73 @@ function getCategories() {
 }
 
 function getChat() {
-    var leadsRef = database.ref('chat');
-    leadsRef.on('value', function (snapshot) {
-        $('.chat').html('');
-        snapshot.forEach(function (childSnapshot) {
-            var childData = childSnapshot.val();
-            $('.chat').append(`<div class="col-sm-4 col-md-4 col-lg-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
+    var id = getUrlVars()['id'];
+    var uid;
+    firebase
+        .auth()
+        .onAuthStateChanged(function (user) {
+            if (user) {
+                uid = user.uid;
+                console.log(id);
+                console.log(uid);
+                var leadsRef = database.ref('chat');
+                leadsRef.on('value', function (snapshot) {
+                    $('.chat').html('');
+                    snapshot.forEach(function (childSnapshot) {
+                        var childData = childSnapshot.val();
+                        if (childData.receiver == id && childData.transmitter == uid || childData.receiver == uid && childData.transmitter == id) {
+                            console.log('hla');
+                            $('.chat').append(`<div class="col-sm-4 col-md-4 col-lg-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
                 <span>` + childData.message + `</span>
             </div>`);
+                        }
+                    });
+                });
+            } else {
+                // No user is signed in.
+            }
+        });
+}
+
+function getUsers() {
+    var leadsRef = database.ref('users');
+    leadsRef.on('value', function (snapshot) {
+        $('.contactos')
+            .empty
+        snapshot.forEach(function (childSnapshot) {
+            var childData = childSnapshot.val();
+            $('.contactos').append('<a href="chat.html?id=' + childSnapshot.key + '"><li class="list-group-item">' + childData.username + '</li></a>')
+            console.log(childData);
         });
     });
 }
 
 function enviar() {
-    var message = $('#message').val();
+
+    var id = getUrlVars()['id'];
+    var uid;
     firebase
-        .database()
-        .ref('chat')
-        .push({
-            'message': message,
-            'receiver': 1,
-            'transmitter': localStorage.getItem('uid'),
-            'date': Date()
+        .auth()
+        .onAuthStateChanged(function (user) {
+            if (user) {
+                uid = user.uid;
+                var message = $('#message').val();
+                firebase
+                    .database()
+                    .ref('chat')
+                    .push({
+                        'message': message,
+                        'receiver': id,
+                        'transmitter': uid,
+                        'date': Date()
+                    });
+                $('#message').val('');
+
+            } else {
+                // No user is signed in.
+            }
         });
-    $('#message').val('');
+
 }
 
 function eliminar(id) {
@@ -123,11 +178,10 @@ function loginFb() {
             var token = result.credential.accessToken;
             // The signed-in user info.
             var user = result.user;
-            alert('Hola ' + user.displayName);
-            // console.log(user.uid);
+            console.log(user);
+            alert('Hola ' + user);
             localStorage.setItem('uid', user.uid);
             location.href = "home.html";
-            // ...
         })
         .catch(function (error) {
             // Handle Errors here.
@@ -227,15 +281,6 @@ function login() {
         });
 }
 
-firebase
-    .auth()
-    .onAuthStateChanged(function (user) {
-        if (user) {
-            console.log(user);
-        } else {
-            // No user is signed in.
-        }
-    });
 function register() {
     var email = $('#email').val();
     var password = $('#password').val();
